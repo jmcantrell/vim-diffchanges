@@ -1,0 +1,28 @@
+*diffchanges.txt*  Shows the changes made to a buffer
+
+Author:  Jeremy Cantrell <jmcantrell@gmail.com>           *diffchanges-author*
+License: Same terms as Vim itself (see |license|)
+
+INTRODUCTION                                   *diffchanges* *diffchanges.vim*
+
+The diffchanges plugin shows changes made to a buffer since the last save to
+disk. It provides a command for showing changes using vimdiff and one that
+shows changes as a patch that can be saved to a file.
+
+COMMANDS                                                *diffchanges-commands*
+
+:DiffChangesDiffToggle     Toggles diff mode. Changes are shown using vimdiff.
+
+:DiffChangesPatchToggle    Toggles patch mode. Changes are show as a unified
+                           diff in another window.
+
+CONFIGURATION                                      *diffchanges-configuration*
+
+g:diffchanges_loaded                                    *g:diffchanges_loaded*
+    If set in your |vimrc|, diffchanges.vim is not loaded.
+
+g:diffchanges_patch_cmd                              *g:diffchanges_patch_cmd*
+    This command will be used to generate the diff in patch mode. It defaults
+    to 'diff -u'.
+
+vim:tw=78:et:ft=help:norl:
