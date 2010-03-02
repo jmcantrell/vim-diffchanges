@@ -68,15 +68,16 @@ function! s:DiffChangesOn(mode) "{{{1
         execute '0read '.filename
         diffthis
         1
+        set buftype=nofile
+        let bufname = "Changes made to '".filename."'"
     elseif a:mode == 'patch'
         below new
         setlocal filetype=diff
         setlocal foldmethod=manual
         silent 0put=diff
         1
+        let bufname = filename.".patch"
     endif
-    set buftype=nofile
-    let bufname = "Changes made to '".filename."'"
     silent file `=bufname`
     autocmd BufUnload <buffer> call s:DiffChangesOff()
     let bufdiff = bufnr('%')
@@ -116,6 +117,7 @@ endfunction
 function! s:Error(message) "{{{1
     echohl ErrorMsg | echo a:message | echohl None
 endfunction
+
 "}}}
 
 let &cpo = s:save_cpo
