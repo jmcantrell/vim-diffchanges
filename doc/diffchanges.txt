@@ -6,10 +6,13 @@ License: Same terms as Vim itself (see |license|)
 INTRODUCTION                                    *diffchanges* *diffchanges.vim*
 
 The diffchanges plugin shows changes made to a buffer since the last save to
-disk. It provides a command for showing changes using vimdiff and one that
-shows changes as a patch that can be saved to a file.
+disk. It provides commands for showing changes using vimdiff and as a patch,
+and a command to write a patch (without viewing it).
 
 COMMANDS                                               *diffchanges-commands*
+
+:DiffChanges [FILENAME]    Write a patch to FILENAME. If FILENAME is not
+                           given, a unique one will be generated.
 
 :DiffChangesDiffToggle     Toggles diff mode. Changes are shown using vimdiff.
 

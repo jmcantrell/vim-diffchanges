@@ -19,11 +19,38 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-command! -bar DiffChangesDiffToggle  :call s:DiffChangesToggle('diff')
+command! -bar -complete=file -nargs=1 DiffChanges :call s:DiffChanges(<q-args>)
+command! -bar DiffChanges :call s:DiffChanges('')
+command! -bar DiffChangesDiffToggle :call s:DiffChangesToggle('diff')
 command! -bar DiffChangesPatchToggle :call s:DiffChangesToggle('patch')
 
+nnoremenu <script> &Plugin.&DiffChanges.&Write\ Patch  <SID>DiffChanges
 nnoremenu <script> &Plugin.&DiffChanges.&Diff\ Toggle  <SID>DiffChangesDiffToggle
 nnoremenu <script> &Plugin.&DiffChanges.&Patch\ Toggle <SID>DiffChangesPatchToggle
+
+function! s:GetDiff() "{{{1
+    let filename = expand('%')
+    let diffname = tempname()
+    execute 'silent w! '.diffname
+    let diff = system(g:diffchanges_patch_cmd.' '.filename.' '.diffname)
+    call delete(diffname)
+    return diff
+endfunction
+
+function! s:GetPatchFilename(filename) "{{{1
+    return a:filename.'.'.strftime('%Y%m%d%H%M%S').'.patch'
+endfunction
+
+function! s:DiffChanges(filename) "{{{1
+    if len(a:filename) == 0
+        let filename = s:GetPatchFilename(expand('%'))
+    else
+        let filename = a:filename
+    endif
+    let diff = s:GetDiff()
+    call writefile(split(diff, '\n'), filename)
+    echo 'Patch written to "'.filename.'"'
+endfunction
 
 function! s:DiffChangesToggle(mode) "{{{1
     if count(s:diffchanges_modes, a:mode) == 0
@@ -47,17 +74,13 @@ function! s:DiffChangesOn(mode) "{{{1
         return
     endif
     let filename = expand('%')
-    let diffname = tempname()
     let buforig = bufnr('%')
-    execute 'silent w! '.diffname
-    let diff = system(g:diffchanges_patch_cmd.' '.filename.' '.diffname)
-    call delete(diffname)
+    let diff = s:GetDiff()
     if len(diff) == 0
         call s:Warn('No changes found')
         return
     endif
     if a:mode == 'diff'
-        call writefile(readfile(filename, 'b'), diffname, 'b')
         let b:diffchanges_savefdm = &fdm
         let b:diffchanges_savefdl = &fdl
         let save_ft=&ft
@@ -76,7 +99,7 @@ function! s:DiffChangesOn(mode) "{{{1
         setlocal foldmethod=manual
         silent 0put=diff
         1
-        let bufname = filename.".patch"
+        let bufname = s:GetPatchFilename(filename)
     endif
     silent file `=bufname`
     autocmd BufUnload <buffer> call s:DiffChangesOff()
