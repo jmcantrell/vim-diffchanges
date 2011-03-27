@@ -19,8 +19,7 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-command! -bar -complete=file -nargs=1 DiffChanges :call s:DiffChanges(<q-args>)
-command! -bar DiffChanges :call s:DiffChanges('')
+command! -bar -complete=file -nargs=? DiffChanges :call s:DiffChanges(<q-args>)
 command! -bar DiffChangesDiffToggle :call s:DiffChangesToggle('diff')
 command! -bar DiffChangesPatchToggle :call s:DiffChangesToggle('patch')
 
@@ -41,11 +40,11 @@ function! s:GetPatchFilename(filename) "{{{1
     return a:filename.'.'.strftime('%Y%m%d%H%M%S').'.patch'
 endfunction
 
-function! s:DiffChanges(filename) "{{{1
-    if len(a:filename) == 0
+function! s:DiffChanges(...) "{{{1
+    if a:0 == 0 || len(a:1) == 0
         let filename = s:GetPatchFilename(expand('%'))
     else
-        let filename = a:filename
+        let filename = a:1
     endif
     let diff = s:GetDiff()
     call writefile(split(diff, '\n'), filename)
