@@ -31,7 +31,7 @@ function! s:GetDiff() "{{{1
     let filename = expand('%')
     let diffname = tempname()
     execute 'silent w! '.diffname
-    let diff = system(g:diffchanges_patch_cmd.' '.filename.' '.diffname)
+    let diff = system(g:diffchanges_patch_cmd.' '.shellescape(filename).' '.diffname)
     call delete(diffname)
     return diff
 endfunction
